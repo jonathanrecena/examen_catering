@@ -12,6 +12,8 @@ function incrementarVersion() {
     $_SESSION['numero_version']++;
 }
 
+
+
 // ===== APARTADO 6: Añadir servicio con validación =====
 $errores = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $accion === 'anadir') {
@@ -87,34 +89,34 @@ $neto = $base + $iva;
 <?php else: ?>
     <table>
         <thead>
-        <tr>
-            <th>Uds.</th>
-            <th>Código</th>
-            <th>Descripción</th>
-            <th>Precio ud.</th>
-            <th>Subtotal</th>
-            <th>Acciones</th>
-        </tr>
+            <tr>
+                <th>Uds.</th>
+                <th>Código</th>
+                <th>Descripción</th>
+                <th>Precio ud.</th>
+                <th>Subtotal</th>
+                <th>Acciones</th>
+            </tr>
         </thead>
         <tbody>
-        <?php foreach ($_SESSION['servicios'] as $indice => $s): ?>
-            <tr>
-                <!-- ===== APARTADO 9: Botones + y - ===== -->
-                <td>
-                    <a href="?accion=modificar_unidades&indice=<?= $indice ?>&delta=-1">−</a>
-                    <?= $s['unidades'] ?>
-                    <a href="?accion=modificar_unidades&indice=<?= $indice ?>&delta=1">+</a>
-                </td>
-                <td><?= htmlspecialchars($s['codigo']) ?></td>
-                <td><?= htmlspecialchars($s['descripcion']) ?></td>
-                <td><?= number_format($s['precio_unidad'], 2, ',', '.') ?> €</td>
-                <td><?= number_format($s['unidades'] * $s['precio_unidad'], 2, ',', '.') ?> €</td>
-                <!-- ===== APARTADO 7: Enlace eliminar ===== -->
-                <td>
-                    <a href="?accion=eliminar&indice=<?= $indice ?>" onclick="return confirm('¿Eliminar este servicio?');">Eliminar</a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
+            <?php foreach ($_SESSION['servicios'] as $indice => $s): ?>
+                <tr>
+                    <!-- ===== APARTADO 9: Botones + y - ===== -->
+                    <td>
+                        <a href="?accion=modificar_unidades&indice=<?= $indice ?>&delta=-1">−</a>
+                        <?= $s['unidades'] ?>
+                        <a href="?accion=modificar_unidades&indice=<?= $indice ?>&delta=1">+</a>
+                    </td>
+                    <td><?= htmlspecialchars($s['codigo']) ?></td>
+                    <td><?= htmlspecialchars($s['descripcion']) ?></td>
+                    <td><?= number_format($s['precio_unidad'], 2, ',', '.') ?> €</td>
+                    <td><?= number_format($s['unidades'] * $s['precio_unidad'], 2, ',', '.') ?> €</td>
+                    <!-- ===== APARTADO 7: Enlace eliminar ===== -->
+                    <td>
+                        <a href="?accion=eliminar&indice=<?= $indice ?>" onclick="return confirm('¿Eliminar este servicio?');">Eliminar</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
 
@@ -139,46 +141,4 @@ $neto = $base + $iva;
     <label>Precio unidad: <input type="number" step="0.01" name="precio_unidad" min="0" required></label><br>
     <button type="submit">Añadir</button>
 </form>
-<?php
-// ===== APARTADO 7: Eliminar servicio =====
-if ($accion === 'eliminar' && isset($_GET['indice'])) {
-$indice = (int)$_GET['indice'];
-if (isset($_SESSION['servicios'][$indice])) {
-array_splice($_SESSION['servicios'], $indice, 1);
-incrementarVersion();
-}
-header('Location: ' . $_SERVER['PHP_SELF']);
-exit;
-}
-// ===== APARTADO 8: Eliminar todo =====
-$accion = $_POST['accion'] ?? $_GET['accion'] ?? '';
-if ($accion === 'eliminar_todo') {
-    $_SESSION['servicios'] = [];
-    $_SESSION['numero_version'] = 1;
-    header('Location: ' . $_SERVER['PHP_SELF']);
-    exit;
-}
-<!-- ===== APARTADO 8: Botón eliminar todo ===== -->
-<form method="post" action="">
-    <input type="hidden" name="accion" value="eliminar_todo">
-    <button type="submit" onclick="return confirm('¿Eliminar todos los datos?');">Eliminar todo</button>
-</form>
-
-</body>
-</html>
-
-// ===== APARTADO 9: Modificar unidades (+/-) =====
-if ($accion === 'modificar_unidades' && isset($_GET['indice']) && isset($_GET['delta'])) {
-    $indice = (int)$_GET['indice'];
-    $delta = (int)$_GET['delta'];
-    if (isset($_SESSION['servicios'][$indice])) {
-        $nuevas = $_SESSION['servicios'][$indice]['unidades'] + $delta;
-        if ($nuevas >= 1) {
-            $_SESSION['servicios'][$indice]['unidades'] = $nuevas;
-            incrementarVersion();
-        }
-    }
-    header('Location: ' . $_SERVER['PHP_SELF']);
-    exit;
-}
 
