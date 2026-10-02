@@ -11,7 +11,16 @@ if (!isset($_SESSION['servicios'])) {
 function incrementarVersion() {
     $_SESSION['numero_version']++;
 }
-
+// ===== APARTADO 7: Eliminar servicio =====
+if ($accion === 'eliminar' && isset($_GET['indice'])) {
+    $indice = (int)$_GET['indice'];
+    if (isset($_SESSION['servicios'][$indice])) {
+        array_splice($_SESSION['servicios'], $indice, 1);
+        incrementarVersion();
+    }
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
 
 
 // ===== APARTADO 6: Añadir servicio con validación =====
